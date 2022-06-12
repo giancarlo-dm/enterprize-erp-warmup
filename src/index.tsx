@@ -1,19 +1,51 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+
+import "./assets/fonts/roboto/font.css";
+import "./assets/styles/main.scss";
+
+import App from "./App/App";
+import { store } from "./App/store";
+// import { AuthContextProvider } from "./Auth/shared/context";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+    document.getElementById("root") as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+        <BrowserRouter>
+            <Provider store={store}>
+                {/*<AuthContextProvider>*/}
+                    <App />
+                {/*</AuthContextProvider>*/}
+            </Provider>
+        </BrowserRouter>
+    </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+/*
+
+Files named "*Module.tsx" holds the Routing definition and lazy loading
+Testing
+    If route is accessible
+    If validation works correctly
+    If business logic works correctly
+
+Modules Structure:
+/auth (AuthModule.tsx)
+    redirects to /login
+    /login (LoginModule.tsx)
+        LoginView.tsx
+    /recover-password (RecoverPasswordModule.tsx)
+        RecoverPasswordView.tsx (on send token, sets token in localstorage to validate against in /set-password/:token
+        /sent
+            SentView.tsx
+        /set-password/:token (checks if token is valid, otherwise go to /recover-password)
+            SetPasswordView.tsx
+            /success
+/dashboard
+
+ */
+
