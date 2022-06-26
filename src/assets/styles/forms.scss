@@ -1,0 +1,93 @@
+@import "./constants/border.constants";
+@import "./constants/colors.constants";
+@import "./constants/fonts.constants";
+@import "./helpers/function.helpers";
+@import "./helpers/mixins.helpers";
+
+$input-border-width: Max(1px, 0.0625rem);
+$input-border-radius: $border-radius;
+$input-height: 2rem;
+
+$input-color-border: $gray_400;
+$input-color-border-active: $color-primary;
+$input-color-border-disabled: $gray-200;
+
+.control {
+    margin-bottom: $font-size + 0.5rem;
+
+    label {
+        font-size: $font-size;
+        display: inline-flex;
+        margin-bottom: 0.25rem;
+
+        &.required::after {
+            margin-left: 0.25rem;
+            color: $color-danger;
+            content: "*";
+        }
+    }
+
+    input[type=text],
+    input[type=password] {
+        border: $input-border-width solid $input-color-border;
+        font-size: $font-size;
+        height: calc-dimension($input-height, $input-border-width, 0rem); /* Ensures correct the height by removing padding and border */
+        width: calc-dimension(100%, $input-border-width, 0.5rem); /* Ensures correct the width by removing padding and border */
+        border-radius: $input-border-radius;
+        padding: 0 0.5rem;
+        margin: 0;
+        display: block;
+
+        &:focus {
+            border-color: $input-color-border-active;
+            outline: none;
+            @include default-box-shadow($input-color-border-active);
+        }
+
+        &:hover {
+            border-color: $input-color-border-active;
+        }
+    }
+
+    &.large {
+        margin-bottom: $font-size-large + 0.5rem;
+
+        label {
+            font-size: $font-size-large;
+        }
+
+        input[type=text],
+        input[type=password],{
+            height: calc-dimension(increase-by-factor($input-height, $size-factor), $input-border-width, 0rem); /* Ensures correct the height by removing padding and border and applying the given factor*/
+            font-size: $font-size-large;
+        }
+    }
+
+    &.small {
+        label {
+            font-size: $font-size-small;
+        }
+
+        input[type=text],
+        input[type=password],{
+            height: calc-dimension(decrease-by-factor($input-height, $size-factor), $input-border-width, 0rem); /* Ensures correct the height by removing padding and border and applying the given factor*/
+            font-size: $font-size-small;
+        }
+    }
+
+    &.invalid {
+        label {
+            color: $color-danger;
+        }
+
+        input {
+            border-color: $color-danger;
+        }
+    }
+
+    &.valid {
+        input {
+            border-color: $color-success;
+        }
+    }
+}

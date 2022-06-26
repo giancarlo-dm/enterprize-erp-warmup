@@ -1,6 +1,6 @@
 import { combineReducers, createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { RootState, store } from "../../../App/store";
+import { RootState, store } from "../../../App/shared/store";
 
 import { AuthAsyncThunks } from "./asyncThunks";
 import { AuthState } from "./AuthState";

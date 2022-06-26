@@ -1,0 +1,58 @@
+@import "./constants/fonts.constants";
+
+h1 {
+    font-size: $font-size * 3;
+    font-weight: bold;
+
+    &.large {
+        font-size: $font-size-large * 3;
+    }
+}
+
+h2 {
+    font-size: $font-size * 2;
+    font-weight: bold;
+
+    &.large {
+        font-size: $font-size-large * 2;
+    }
+}
+
+h3 {
+    font-size: $font-size * 1.5;
+    font-weight: bold;
+
+    &.large {
+        font-size: $font-size-large * 1.5;
+    }
+}
+
+h4 {
+    font-size: $font-size;
+    font-weight: bold;
+
+    &.large {
+        font-size: $font-size-large;
+    }
+}
+
+h5 {
+    font-size: $font-size;
+    font-weight: normal;
+
+    &.large {
+        font-size: $font-size-large;
+    }
+}
+
+h6 {
+    font-size: $font-size;
+    font-weight: normal;
+    font-style: italic;
+
+    &.large {
+        font-size: $font-size-large;
+    }
+}
+
+

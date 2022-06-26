@@ -1,0 +1,19 @@
+@import "../../../assets/styles/constants/colors.constants";
+@import "../../../assets/styles/constants/border.constants";
+@import "../../../assets/styles/helpers/mixins.helpers";
+
+.cookieDialog {
+    position: absolute;
+    width: 480px;
+    border: Max(1px, 0.0625rem) solid $gray_400;
+    border-radius: $border-radius;
+    padding: 1rem;
+    left: unset;
+    top: unset;
+    bottom: 0;
+    right: 0;
+    margin-right: 2.5rem;
+    margin-bottom: 2.5rem;
+
+    @include default-box-shadow($gray_400);
+}

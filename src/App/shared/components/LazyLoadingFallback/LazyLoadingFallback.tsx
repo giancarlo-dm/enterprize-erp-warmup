@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-const LazyLoadingFallback: FC = () => {
+export const LazyLoadingFallback: FC = () => {
 
     //#region Render
     return (
@@ -8,5 +8,3 @@ const LazyLoadingFallback: FC = () => {
     );
     //#endregion
 };
-
-export default LazyLoadingFallback;

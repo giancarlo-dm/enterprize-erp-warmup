@@ -3,11 +3,10 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
-import "./assets/fonts/roboto/font.css";
 import "./assets/styles/main.scss";
 
 import App from "./App/App";
-import { store } from "./App/store";
+import { store } from "./App/shared/store";
 // import { AuthContextProvider } from "./Auth/shared/context";
 
 const root = ReactDOM.createRoot(

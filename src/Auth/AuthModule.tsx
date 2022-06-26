@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 
-import LazyLoadingFallback from "../App/components/LazyLoadingFallback/LazyLoadingFallback";
+import { LazyLoadingFallback } from "../App";
 import { AlreadyLoggedInGuard } from "./shared";
 
 const LoginModule = React.lazy(() => import("./Login/LoginModule"));

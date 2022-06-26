@@ -1,4 +1,14 @@
-@import "./colors.constants";
+@import "./constants/border.constants";
+@import "./constants/colors.constants";
+@import "./constants/fonts.constants";
+@import "./helpers/function.helpers";
+@import "./helpers/margin.helpers";
+@import "./helpers/mixins.helpers";
+@import "./helpers/text.helpers";
+@import "anchors";
+@import "./buttons";
+@import "./forms";
+@import "./titles";
 
 * {
     padding: 0;
@@ -6,7 +16,12 @@
 }
 
 html {
-    font-size: 16px;
+    font-size: $font-size-root;
     font-family: "Roboto", sans-serif;
     color: $gray_800;
+    background-color: $color-background;
+}
+
+small {
+    font-size: $font-size-small;
 }

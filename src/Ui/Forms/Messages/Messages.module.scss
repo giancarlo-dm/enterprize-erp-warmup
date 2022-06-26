@@ -1,0 +1,16 @@
+@import "../../../assets/styles/constants/colors.constants";
+@import "../../../assets/styles/constants/fonts.constants";
+
+.invalidMessage {
+    margin-top: 0.25rem;
+    color: $color-danger;
+    position: absolute;
+    font-size: $font-size-small;
+}
+
+.validMessage {
+    margin-top: 0.25rem;
+    color: $color-success;
+    position: absolute;
+    font-size: $font-size-small;
+}
