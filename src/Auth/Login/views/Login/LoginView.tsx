@@ -3,7 +3,7 @@ import { Link, Location, useLocation, useNavigate } from "react-router-dom";
 
 import { CopyRight, useAppDispatch } from "../../../../App";
 import logoPng from "../../../../assets/images/logo.png";
-import { BasicValidators, ControlState, InputText } from "../../../../Ui/Forms";
+import { ControlState, InputText } from "../../../../Ui/Forms";
 import { authActions } from "../../../shared";
 import classes from "./LoginView.module.scss";
 
@@ -77,23 +77,29 @@ const LoginView: FC = () => {
                 <form className="mgt3" noValidate>
                     <h5 className="large text-align-center">Login</h5>
 
-                    <InputText label="E-mail" name="email" size="large" required
-                               value={email}
-                               validators={[BasicValidators.email()]}
+                    <InputText label="E-mail" name="email" size="large" type="email"
+                               required
                                errorMessages={{
                                    required: "E-mail é requerido.",
                                    email: "O E-mail informado não é válido."
                                }}
+                               value={email}
                                onChange={emailChangeHandler} />
 
-                    <InputText label="Password" name="password" size="large" required
+                    <InputText label="Password" name="password" size="large" type="password"
+                               required
+                               errorMessages={{
+                                   required: "Senha é requerido."
+                               }}
                                value={password}
-                               errorMessages={{required: "Senha é requerido."}}
                                onChange={passwordChangeHandler} />
 
-                    <InputText label="Empresa" name="company" size="large" required
+                    <InputText label="Empresa" name="company" size="large"
+                               required
+                               errorMessages={{
+                                   required: "Empresa é requerido."
+                               }}
                                value={company}
-                               errorMessages={{required: "Empresa é requerido."}}
                                onChange={companyChangeHandler} />
 
                     <button type="submit" className="large block mgt3">Login</button>

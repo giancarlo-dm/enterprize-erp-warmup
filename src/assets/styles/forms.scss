@@ -28,7 +28,8 @@ $input-color-border-disabled: $gray-200;
     }
 
     input[type=text],
-    input[type=password] {
+    input[type=password],
+    input[type=email], {
         border: $input-border-width solid $input-color-border;
         font-size: $font-size;
         height: calc-dimension($input-height, $input-border-width, 0rem); /* Ensures correct the height by removing padding and border */
@@ -57,7 +58,8 @@ $input-color-border-disabled: $gray-200;
         }
 
         input[type=text],
-        input[type=password],{
+        input[type=password],
+        input[type=email] {
             height: calc-dimension(increase-by-factor($input-height, $size-factor), $input-border-width, 0rem); /* Ensures correct the height by removing padding and border and applying the given factor*/
             font-size: $font-size-large;
         }
@@ -69,7 +71,8 @@ $input-color-border-disabled: $gray-200;
         }
 
         input[type=text],
-        input[type=password],{
+        input[type=password],
+        input[type=email] {
             height: calc-dimension(decrease-by-factor($input-height, $size-factor), $input-border-width, 0rem); /* Ensures correct the height by removing padding and border and applying the given factor*/
             font-size: $font-size-small;
         }
