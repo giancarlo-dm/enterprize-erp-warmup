@@ -1,9 +1,9 @@
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent } from "react";
 import { Link, Location, useLocation, useNavigate } from "react-router-dom";
 
 import { CopyRight, useAppDispatch } from "../../../../App";
 import logoPng from "../../../../assets/images/logo.png";
-import { ControlState, InputText } from "../../../../Ui/Forms";
+import { BasicValidators, Control, InputText, useControl } from "../../../../Ui/Forms";
 import { authActions } from "../../../shared";
 import classes from "./LoginView.module.scss";
 
@@ -20,20 +20,32 @@ const LoginView: FC = () => {
     const appDispatch = useAppDispatch();
     //#endregion
 
-    //#region State
-    const [email, setEmail] = useState("");
-    const [emailIsValid, setEmailIsValid] = useState(false);
-    const [password, setPassword] = useState("");
-    const [passwordIsValid, setPasswordIsValid] = useState(false);
-    const [company, setCompany] = useState("");
-    const [companyIsValid, setCompanyIsValid] = useState(false);
+    //#region Controls
+    const emailControl: Control<string> = useControl(
+        "",
+        [
+            BasicValidators.required(),
+            BasicValidators.email()
+        ]);
+    const passwordControl: Control<string> = useControl(
+        "",
+        [
+            BasicValidators.required()
+        ]
+    );
+    const companyControl: Control<string> = useControl(
+        "",
+        [
+            BasicValidators.required()
+        ]
+    );
     //#endregion
 
     //#region Event Handlers
     const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!emailIsValid || !passwordIsValid || !companyIsValid) {
+        if (!emailControl.isValid) {
             return;
         }
 
@@ -45,24 +57,6 @@ const LoginView: FC = () => {
         catch (e: any) {
             alert(`Failed to login!\n\n${e.message}`);
         }
-    };
-
-    const emailChangeHandler = (change: ControlState) => {
-        setEmail(change.value);
-        setEmailIsValid(change.isValid);
-
-    };
-
-    const passwordChangeHandler = (change: ControlState) => {
-        setPassword(change.value);
-        setPasswordIsValid(change.isValid);
-
-    };
-
-    const companyChangeHandler = (change: ControlState) => {
-        setCompany(change.value);
-        setCompanyIsValid(change.isValid);
-
     };
     //#endregion
 
@@ -79,28 +73,25 @@ const LoginView: FC = () => {
 
                     <InputText label="E-mail" name="email" size="large" type="email"
                                required
+                               control={emailControl}
                                errorMessages={{
                                    required: "E-mail é requerido.",
                                    email: "O E-mail informado não é válido."
-                               }}
-                               value={email}
-                               onChange={emailChangeHandler} />
+                               }} />
 
                     <InputText label="Password" name="password" size="large" type="password"
                                required
+                               control={passwordControl}
                                errorMessages={{
                                    required: "Senha é requerido."
-                               }}
-                               value={password}
-                               onChange={passwordChangeHandler} />
+                               }} />
 
                     <InputText label="Empresa" name="company" size="large"
                                required
+                               control={companyControl}
                                errorMessages={{
                                    required: "Empresa é requerido."
-                               }}
-                               value={company}
-                               onChange={companyChangeHandler} />
+                               }} />
 
                     <button type="submit" className="large block mgt3">Login</button>
 

@@ -6,14 +6,14 @@ import { BrowserRouter } from "react-router-dom";
 import "./assets/styles/main.scss";
 
 import App from "./App/App";
-import { store } from "./App/shared/store";
+import { store } from "./App";
 // import { AuthContextProvider } from "./Auth/shared/context";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
 );
 root.render(
-    <React.StrictMode>
+    // <React.StrictMode>
         <BrowserRouter>
             <Provider store={store}>
                 {/*<AuthContextProvider>*/}
@@ -21,7 +21,7 @@ root.render(
                 {/*</AuthContextProvider>*/}
             </Provider>
         </BrowserRouter>
-    </React.StrictMode>
+    // </React.StrictMode>
 );
 
 /*
