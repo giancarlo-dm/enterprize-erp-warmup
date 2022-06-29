@@ -1,11 +1,14 @@
-import { useCallback, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 import { Control } from "./Control";
+import { ControlGroup } from "./ControlGroup";
 import { ValidatorFn } from "./ValidatorFn.type";
 import { ValidatorResult } from "./ValidatorResult.type";
 
 /**
  * Reducer actions for the control.
+ *
+ * @since 0.1.0
  */
 enum ControlActions {
     INPUT = "INPUT",
@@ -19,6 +22,8 @@ enum ControlActions {
  * @param validators The list of custom validators to be used.
  * @param options Customize the behavior of this control.
  * @return A {@link Control} instance ready to be bound to form components.
+ *
+ * @since 0.1.0
  */
 export function useControl<T = any>(initialValue: T,
                                     validators: Array<ValidatorFn> = [],
@@ -29,15 +34,18 @@ export function useControl<T = any>(initialValue: T,
 
     const controlReducer = useMemo(() => buildControlReducer(initialValue), [initialValue]);
     const [controlState, controlDispatch] = useReducer(controlReducer.reducer, controlReducer.initialState);
-    const [controlValidators, setControlValidators] = useState(validators);
+    const [controlValidatorsState, setControlValidatorsState] = useState(validators);
+    const [parentState, setParentState] = useState<null|ControlGroup>(null);
 
     /**
      * Validation result.
      */
     const validationResult: ValidatorResult = useMemo(
-        () => runSyncValidators(controlState.value, controlValidators, options.runAllSyncValidators),
-        [controlState.value, controlValidators, options.runAllSyncValidators]
+        () => runSyncValidators(controlState.value, controlValidatorsState, options.runAllSyncValidators),
+        [controlState.value, controlValidatorsState, options.runAllSyncValidators]
     );
+
+    const isValid = validationResult == null;
     //#endregion
 
     //#region Event Handlers
@@ -75,7 +83,7 @@ export function useControl<T = any>(initialValue: T,
      */
     const setValidators = useCallback(
         (validators: Array<ValidatorFn>): void => {
-            setControlValidators(validators);
+            setControlValidatorsState(validators);
         }, []
     );
 
@@ -84,7 +92,7 @@ export function useControl<T = any>(initialValue: T,
      */
     const addValidators = useCallback(
         (...validators: Array<ValidatorFn>): void => {
-            setControlValidators(prevState => [...prevState, ...validators]);
+            setControlValidatorsState(prevState => [...prevState, ...validators]);
         }, []
     );
 
@@ -93,7 +101,7 @@ export function useControl<T = any>(initialValue: T,
      */
     const removeValidators = useCallback(
         (...validators: Array<ValidatorFn>): void => {
-            setControlValidators(prevState => {
+            setControlValidatorsState(prevState => {
                 const newValidators = [...prevState];
                 for (let validator of validators) {
                     const index = newValidators.indexOf(validator);
@@ -106,10 +114,21 @@ export function useControl<T = any>(initialValue: T,
             });
         }, []
     );
+
+    /**
+     * {@link Control.setParent}
+     */
+    const setParent = useCallback(
+        (parent: ControlGroup): void => {
+            setParentState(parent);
+        }, []
+    );
     //#endregion
 
-    //#region Hook Return
-    // Control never changes, only its contents. Re-Render is triggered normally because of setState.
+    //#region Refs
+    /**
+     * Control never changes, only its contents. Re-Render is triggered normally because of setState.
+     */
     const control = useRef(new Control(
         initialValue,
         false,
@@ -122,22 +141,39 @@ export function useControl<T = any>(initialValue: T,
         reset,
         setValidators,
         addValidators,
-        removeValidators
+        removeValidators,
+        setParent
     ));
+    //#endregion
 
+    //#region Effects
+    // Updates parent validity
+    useEffect(
+        () => {
+            if (parentState != null) {
+                parentState.updateValidity();
+            }
+        },
+        [isValid, parentState]
+    );
+    //#endregion
+
+    //#region Hook Return
     control.current.value = controlState.value;
     control.current.isTouched = controlState.isTouched;
     control.current.isDirty = controlState.isDirty;
-    control.current.isValid = validationResult == null;
+    control.current.isValid = isValid;
     control.current.errors = validationResult;
-    control.current.validators = controlValidators;
+    control.current.validators = controlValidatorsState;
 
     return control.current;
     //#endregion
 }
 
 /**
+ * Options to configure behavior of the controls.
  *
+ * @since 0.1.0
  */
 export type ControlOptions = {
     /**
@@ -153,6 +189,8 @@ export type ControlOptions = {
 /**
  * Builds the control reducer.
  * @param initialValue The initial value to be set on the control.
+ *
+ * @since 0.1.0
  */
 function buildControlReducer<T = any>(initialValue: T): Reducer<ControlReducerState<T>, ControlActions, T> {
 
@@ -182,6 +220,8 @@ function buildControlReducer<T = any>(initialValue: T): Reducer<ControlReducerSt
  * @param value The value to be used on the validators.
  * @param validators The list of validators.
  * @param runAllSyncValidators Flag to run all validators and not stop on first error.
+ *
+ * @since 0.1.0
  */
 function runSyncValidators<T>(value: T,
                               validators: Array<ValidatorFn>,
@@ -211,6 +251,8 @@ function runSyncValidators<T>(value: T,
 
 /**
  * Control state inside reducer
+ *
+ * @since 0.1.0
  */
 type ControlReducerState<T> = {
     /**
@@ -229,6 +271,8 @@ type ControlReducerState<T> = {
 
 /**
  * List of actions that the control's dispatcher can dispatch.
+ *
+ * @since 0.1.0
  */
 type ControlReducerActions<T> = { type: ControlActions.INPUT, value: T }
     | { type: ControlActions.BLUR }
@@ -236,6 +280,8 @@ type ControlReducerActions<T> = { type: ControlActions.INPUT, value: T }
 
 /**
  * Reducer interface
+ *
+ * @since 0.1.0
  */
 type Reducer<S, A, V> = {
     initialState: S;

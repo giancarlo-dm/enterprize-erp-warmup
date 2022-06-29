@@ -1,3 +1,4 @@
+import { ControlGroup } from "./ControlGroup";
 import { ValidatorFn } from "./ValidatorFn.type";
 import { ValidatorResult } from "./ValidatorResult.type";
 
@@ -5,7 +6,7 @@ import { ValidatorResult } from "./ValidatorResult.type";
  * Represents a control of a form. May be used with any form input element or custom elements that
  * requires a control. Provides methods for events dispatching.
  *
- * @since v0.1.0
+ * @since 0.1.0
  */
 export class Control<T> {
 
@@ -61,6 +62,10 @@ export class Control<T> {
      * Removes a set of validator the current list of validators.
      */
     readonly removeValidators: (...validators: Array<ValidatorFn>) => void;
+    /**
+     * Sets a parent for this control. Will propagate any value change and validation status.
+     */
+    readonly setParent: (parent: ControlGroup) => void;
     //#endregion
 
     //#region Constructor
@@ -71,7 +76,8 @@ export class Control<T> {
                 reset: () => void,
                 setValidators: (validators: Array<ValidatorFn>) => void,
                 addValidators: (...validators: Array<ValidatorFn>) => void,
-                removeValidators: (...validators: Array<ValidatorFn>) => void ) {
+                removeValidators: (...validators: Array<ValidatorFn>) => void,
+                setParent: (parent: ControlGroup) => void) {
         this.value = value;
         this.isTouched = isTouched;
         this.isDirty = isDirty;
@@ -85,6 +91,7 @@ export class Control<T> {
         this.setValidators = setValidators;
         this.addValidators = addValidators;
         this.removeValidators = removeValidators;
+        this.setParent = setParent;
     }
     //#endregion
 }

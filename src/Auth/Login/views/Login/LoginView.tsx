@@ -3,12 +3,14 @@ import { Link, Location, useLocation, useNavigate } from "react-router-dom";
 
 import { CopyRight, useAppDispatch } from "../../../../App";
 import logoPng from "../../../../assets/images/logo.png";
-import { BasicValidators, Control, InputText, useControl } from "../../../../Ui/Forms";
+import {
+    BasicValidators, Control, ControlGroup, InputText, useControl, useControlGroup
+} from "../../../../Ui/Forms";
 import { authActions } from "../../../shared";
 import classes from "./LoginView.module.scss";
 
 
-interface State {
+type State = {
     from?: Location;
 }
 
@@ -21,31 +23,27 @@ const LoginView: FC = () => {
     //#endregion
 
     //#region Controls
-    const emailControl: Control<string> = useControl(
-        "",
-        [
+    const loginForm: ControlGroup = useControlGroup({
+        email: useControl("", [
             BasicValidators.required(),
             BasicValidators.email()
-        ]);
-    const passwordControl: Control<string> = useControl(
-        "",
-        [
+        ]),
+        password: useControl("", [
+                BasicValidators.required()
+        ]),
+        company: useControl("", [
             BasicValidators.required()
-        ]
-    );
-    const companyControl: Control<string> = useControl(
-        "",
-        [
-            BasicValidators.required()
-        ]
-    );
+        ])
+    });
     //#endregion
 
     //#region Event Handlers
     const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!emailControl.isValid) {
+        console.log(loginForm.isValid);
+
+        if (!loginForm.isValid) {
             return;
         }
 
@@ -68,12 +66,13 @@ const LoginView: FC = () => {
                     <img src={logoPng} alt="Enterprize ERP" />
                 </header>
 
-                <form className="mgt3" noValidate>
+                <form className="mgt3" noValidate
+                      onSubmit={submitHandler}>
                     <h5 className="large text-align-center">Login</h5>
 
                     <InputText label="E-mail" name="email" size="large" type="email"
                                required
-                               control={emailControl}
+                               control={loginForm.controls.email as Control<string>}
                                errorMessages={{
                                    required: "E-mail é requerido.",
                                    email: "O E-mail informado não é válido."
@@ -81,14 +80,14 @@ const LoginView: FC = () => {
 
                     <InputText label="Password" name="password" size="large" type="password"
                                required
-                               control={passwordControl}
+                               control={loginForm.controls.password as Control<string>}
                                errorMessages={{
                                    required: "Senha é requerido."
                                }} />
 
                     <InputText label="Empresa" name="company" size="large"
                                required
-                               control={companyControl}
+                               control={loginForm.controls.company as Control<string>}
                                errorMessages={{
                                    required: "Empresa é requerido."
                                }} />
