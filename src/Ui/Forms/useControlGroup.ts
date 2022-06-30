@@ -18,7 +18,7 @@ import { ControlsMap } from "./ControlsMap.type";
 export function useControlGroup(controlsMap: ControlsMap) {
 
     //#region Initialization
-    const [isValid, setIsValid] = useState(false);
+    const [isValid, setIsValid] = useState<undefined|boolean>(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [parentState, setParentState] = useState<null|ControlGroup>(null);
     //#endregion
@@ -28,11 +28,11 @@ export function useControlGroup(controlsMap: ControlsMap) {
      * {@link ControlGroup.updateValidity}
      */
     const updateValidity = useCallback( (): void => {
-        let valid: boolean = true;
+        let valid: undefined|boolean = true;
 
         for (let controlKey in controlsMap) {
             if (!controlsMap[controlKey].isValid) {
-                valid = false;
+                valid = controlsMap[controlKey].isValid;
                 break;
             }
         }
@@ -103,7 +103,7 @@ export function useControlGroup(controlsMap: ControlsMap) {
         [] // eslint-disable-line react-hooks/exhaustive-deps
     );
 
-    // Updates parent validity
+     // Updates parent validity
      useEffect(
         () => {
             if (parentState != null) {

@@ -1,6 +1,7 @@
 export * from "./Form/Form";
 export * from "./InputText/InputText";
 export * from "./Messages/Messages";
+export * from "./AsyncValidatorFn.type";
 export * from "./BasicValidators";
 export * from "./Control";
 export * from "./ControlGroup";
@@ -9,4 +10,4 @@ export * from "./useControl";
 export * from "./useControlGroup";
 export * from "./ValidationMessages.type";
 export * from "./ValidatorFn.type";
-export * from "./ValidatorResult.type";
+export * from "./ValidationResult.type";

@@ -1,6 +1,7 @@
+import { AsyncValidatorFn } from "./AsyncValidatorFn.type";
 import { ControlGroup } from "./ControlGroup";
 import { ValidatorFn } from "./ValidatorFn.type";
-import { ValidatorResult } from "./ValidatorResult.type";
+import { ValidationResult } from "./ValidationResult.type";
 
 /**
  * Represents a control of a form. May be used with any form input element or custom elements that
@@ -24,9 +25,10 @@ export class Control<T> {
      */
     isDirty: boolean;
     /**
-     * Flag that indicates if the control is valid.
+     * Flag that indicates if the control is valid. If <code>undefined</code>, means that async
+     * validators are still running.
      */
-    isValid: boolean;
+    isValid: undefined|boolean;
     /**
      * Flag that indicates if the form this control is attached to was submitted.
      */
@@ -34,11 +36,15 @@ export class Control<T> {
     /**
      * Error map with error keys returned by validators or null if valid.
      */
-    errors: ValidatorResult;
+    errors: ValidationResult;
     /**
      * List of validators currently assigned to this control.
      */
     validators: Array<ValidatorFn>;
+    /**
+     * List of asynchronous validators currently assigned to this control.
+     */
+    asyncValidators: Array<AsyncValidatorFn>;
     //#endregion
 
     //#region Event Handlers
@@ -67,6 +73,18 @@ export class Control<T> {
      */
     readonly removeValidators: (...validators: Array<ValidatorFn>) => void;
     /**
+     * Overrides the current async validators.
+     */
+    readonly setAsyncValidators: (asyncValidators: Array<AsyncValidatorFn>) => void;
+    /**
+     * Adds a set of async validators the current list of async validators.
+     */
+    readonly addAsyncValidators: (...asyncValidators: Array<AsyncValidatorFn>) => void;
+    /**
+     * Removes a set of async validator the current list of async validators.
+     */
+    readonly removeAsyncValidators: (...validators: Array<AsyncValidatorFn>) => void;
+    /**
      * Sets a parent for this control. Will propagate any value change and validation status.
      */
     readonly setParent: (parent: ControlGroup) => void;
@@ -88,16 +106,20 @@ export class Control<T> {
                 setValidators: (validators: Array<ValidatorFn>) => void,
                 addValidators: (...validators: Array<ValidatorFn>) => void,
                 removeValidators: (...validators: Array<ValidatorFn>) => void,
+                setAsyncValidators: (asyncValidators: Array<AsyncValidatorFn>) => void,
+                addAsyncValidators: (...asyncValidators: Array<AsyncValidatorFn>) => void,
+                removeAsyncValidators: (...asyncValidators: Array<AsyncValidatorFn>) => void,
                 setParent: (parent: ControlGroup) => void,
                 markSubmitted: () => void,
                 markRetracted: () => void) {
         this.value = value;
         this.isTouched = false;
         this.isDirty = false;
-        this.isValid = false;
+        this.isValid = true;
         this.isSubmitted = false;
         this.errors = null;
         this.validators = [];
+        this.asyncValidators = [];
 
         this.change = change;
         this.blur = blur;
@@ -105,6 +127,9 @@ export class Control<T> {
         this.setValidators = setValidators;
         this.addValidators = addValidators;
         this.removeValidators = removeValidators;
+        this.setAsyncValidators = setAsyncValidators;
+        this.addAsyncValidators = addAsyncValidators;
+        this.removeAsyncValidators = removeAsyncValidators;
         this.setParent = setParent;
         this.markSubmitted = markSubmitted;
         this.markRetracted = markRetracted;

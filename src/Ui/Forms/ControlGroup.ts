@@ -13,9 +13,10 @@ export class ControlGroup {
      */
     controls: ControlsMap;
     /**
-     * Flag that indicates if the control group is valid.
+     * Flag that indicates if the control is valid. If <code>undefined</code>, means that async
+     * validators are still running.
      */
-    isValid: boolean;
+    isValid: undefined|boolean;
     /**
      * Flag that indicates if the form this control group is attached to was submitted.
      */

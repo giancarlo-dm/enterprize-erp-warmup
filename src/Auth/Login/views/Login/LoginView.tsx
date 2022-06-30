@@ -33,7 +33,7 @@ const LoginView: FC = () => {
             BasicValidators.email()
         ]),
         password: useControl("", [
-                BasicValidators.required()
+            BasicValidators.required()
         ]),
         company: useControl("", [
             BasicValidators.required()

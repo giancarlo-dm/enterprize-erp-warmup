@@ -1,3 +1,3 @@
-import { ValidatorResult } from "./ValidatorResult.type";
+import { ValidationResult } from "./ValidationResult.type";
 
-export type ValidatorFn = (current: any) => ValidatorResult;
+export type ValidatorFn = (current: any) => ValidationResult;
