@@ -5,11 +5,11 @@ import { AuthService } from "../services";
 
 export class AuthAsyncThunks {
 
-    static login = createAsyncThunk<User, {username: string, password: string}>(
+    static login = createAsyncThunk<User, {email: string, password: string, company: string}>(
         "auth/login",
-        async ({username, password}, thunkApi) => {
+        async ({email, password, company}, thunkApi) => {
             try {
-                return await AuthService.login(username, password);
+                return await AuthService.login(email, password, company);
             }
             catch (e: any) {
                 return thunkApi.rejectWithValue({message: e.message});

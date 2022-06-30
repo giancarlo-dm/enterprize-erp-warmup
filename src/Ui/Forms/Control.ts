@@ -28,6 +28,10 @@ export class Control<T> {
      */
     isValid: boolean;
     /**
+     * Flag that indicates if the form this control is attached to was submitted.
+     */
+    isSubmitted: boolean;
+    /**
      * Error map with error keys returned by validators or null if valid.
      */
     errors: ValidatorResult;
@@ -66,24 +70,34 @@ export class Control<T> {
      * Sets a parent for this control. Will propagate any value change and validation status.
      */
     readonly setParent: (parent: ControlGroup) => void;
+    /**
+     * Marks this control as submitted. To clear, please use {@link this.markRetracted}
+     */
+    readonly markSubmitted: () => void;
+    /**
+     * Marks this control as not submitted.
+     */
+    readonly markRetracted: () => void;
     //#endregion
 
     //#region Constructor
-    constructor(value: T, isTouched: boolean, isDirty: boolean, isValid: boolean,
-                errors: ValidatorResult, validators: Array<ValidatorFn>,
+    constructor(value: T,
                 change: (value: T) => void,
                 blur: () => void,
                 reset: () => void,
                 setValidators: (validators: Array<ValidatorFn>) => void,
                 addValidators: (...validators: Array<ValidatorFn>) => void,
                 removeValidators: (...validators: Array<ValidatorFn>) => void,
-                setParent: (parent: ControlGroup) => void) {
+                setParent: (parent: ControlGroup) => void,
+                markSubmitted: () => void,
+                markRetracted: () => void) {
         this.value = value;
-        this.isTouched = isTouched;
-        this.isDirty = isDirty;
-        this.isValid = isValid;
-        this.errors = errors;
-        this.validators = validators;
+        this.isTouched = false;
+        this.isDirty = false;
+        this.isValid = false;
+        this.isSubmitted = false;
+        this.errors = null;
+        this.validators = [];
 
         this.change = change;
         this.blur = blur;
@@ -92,6 +106,8 @@ export class Control<T> {
         this.addValidators = addValidators;
         this.removeValidators = removeValidators;
         this.setParent = setParent;
+        this.markSubmitted = markSubmitted;
+        this.markRetracted = markRetracted;
     }
     //#endregion
 }

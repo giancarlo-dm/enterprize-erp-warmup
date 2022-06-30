@@ -14,7 +14,7 @@ export function classList(...classes: Array<string|ClassMap>): string {
         if (typeof clazz === "string") {
            compiledClasses.push(clazz);
         }
-        else {
+        else if (typeof clazz === "object" && clazz != null) {
             const classKeys: Array<string|symbol> = Reflect.ownKeys(clazz);
             for (let classKey of classKeys) {
                 if (Reflect.get(clazz, classKey)) {
@@ -22,6 +22,7 @@ export function classList(...classes: Array<string|ClassMap>): string {
                 }
             }
         }
+        //if undefined or null will ignore
     }
 
     return compiledClasses.join(" ");

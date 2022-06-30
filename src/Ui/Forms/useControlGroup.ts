@@ -19,6 +19,7 @@ export function useControlGroup(controlsMap: ControlsMap) {
 
     //#region Initialization
     const [isValid, setIsValid] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
     const [parentState, setParentState] = useState<null|ControlGroup>(null);
     //#endregion
 
@@ -26,7 +27,7 @@ export function useControlGroup(controlsMap: ControlsMap) {
     /**
      * {@link ControlGroup.updateValidity}
      */
-    const updateValidity = (): void => {
+    const updateValidity = useCallback( (): void => {
         let valid: boolean = true;
 
         for (let controlKey in controlsMap) {
@@ -37,7 +38,9 @@ export function useControlGroup(controlsMap: ControlsMap) {
         }
 
         setIsValid(valid);
-    };
+        },
+        [controlsMap]
+    );
 
     /**
      * {@link ControlGroup.updateValidity}
@@ -46,6 +49,32 @@ export function useControlGroup(controlsMap: ControlsMap) {
         (parent: ControlGroup): void => {
             setParentState(parent);
         }, []
+    );
+
+    /**
+     * {@link ControlGroup.markSubmitted}
+     */
+    const markSubmitted = useCallback(
+        () => {
+            setIsSubmitted(true);
+            for (let controlKey in controlsMap) {
+                controlsMap[controlKey].markSubmitted();
+            }
+        },
+        [controlsMap]
+    );
+
+    /**
+     * {@link ControlGroup.markRetracted}
+     */
+    const markRetracted = useCallback(
+        () => {
+            setIsSubmitted(false);
+            for (let controlKey in controlsMap) {
+                controlsMap[controlKey].markRetracted();
+            }
+        },
+        [controlsMap]
     );
     //#endregion
 
@@ -57,7 +86,9 @@ export function useControlGroup(controlsMap: ControlsMap) {
     const controlGroup = useRef(new ControlGroup(
         controlsMap,
         updateValidity,
-        setParent
+        setParent,
+        markSubmitted,
+        markRetracted
     ));
     //#endregion
 
@@ -85,6 +116,7 @@ export function useControlGroup(controlsMap: ControlsMap) {
 
     //#region Hook Return
     controlGroup.current.isValid = isValid;
+    controlGroup.current.isSubmitted = isSubmitted;
 
     return controlGroup.current;
     //#endregion

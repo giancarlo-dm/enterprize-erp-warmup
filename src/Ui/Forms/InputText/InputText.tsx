@@ -10,7 +10,7 @@ import { ValidatorFn } from "../ValidatorFn.type";
 /**
  * InputText control. Allows the user to input text data with validation.
  *
- * @since v0.1.0
+ * @since 0.1.0
  */
 export const InputText: FC<Props> = (props) => {
 
@@ -30,7 +30,7 @@ export const InputText: FC<Props> = (props) => {
      */
     return (
         <div className={classList("control", {
-            invalid: !props.control.isValid && props.control.isTouched,
+            invalid: !props.control.isValid && (props.control.isTouched || props.control.isSubmitted),
             large: props.size === "large",
             small: props.size === "small"
         })}>
@@ -45,7 +45,7 @@ export const InputText: FC<Props> = (props) => {
                    value={props.control.value}
                    onChange={changeHandler}
                    onBlur={blurHandler} />
-            <If expression={props.control.isTouched}>
+            <If expression={props.control.isTouched || props.control.isSubmitted}>
                 <Messages errors={props.control.errors}
                           errorMessages={props.errorMessages}
                           success={props.successMessage} />
@@ -59,8 +59,6 @@ InputText.defaultProps = {
     type: "text",
     required: false
 };
-
-//--------------------------------------------------------------------------------------------------
 
 type Props = {
     /**

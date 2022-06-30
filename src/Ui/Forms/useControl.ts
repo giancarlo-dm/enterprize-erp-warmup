@@ -36,6 +36,7 @@ export function useControl<T = any>(initialValue: T,
     const [controlState, controlDispatch] = useReducer(controlReducer.reducer, controlReducer.initialState);
     const [controlValidatorsState, setControlValidatorsState] = useState(validators);
     const [parentState, setParentState] = useState<null|ControlGroup>(null);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     /**
      * Validation result.
@@ -123,6 +124,26 @@ export function useControl<T = any>(initialValue: T,
             setParentState(parent);
         }, []
     );
+
+    /**
+     * {@link ControlGroup.markSubmitted}
+     */
+    const markSubmitted = useCallback(
+        () => {
+            setIsSubmitted(true);
+        },
+        []
+    );
+
+    /**
+     * {@link ControlGroup.markRetracted}
+     */
+    const markRetracted = useCallback(
+        () => {
+            setIsSubmitted(false);
+        },
+        []
+    );
     //#endregion
 
     //#region Refs
@@ -131,18 +152,15 @@ export function useControl<T = any>(initialValue: T,
      */
     const control = useRef(new Control(
         initialValue,
-        false,
-        false,
-        false,
-        null,
-        [],
         change,
         blur,
         reset,
         setValidators,
         addValidators,
         removeValidators,
-        setParent
+        setParent,
+        markSubmitted,
+        markRetracted
     ));
     //#endregion
 
@@ -163,6 +181,7 @@ export function useControl<T = any>(initialValue: T,
     control.current.isTouched = controlState.isTouched;
     control.current.isDirty = controlState.isDirty;
     control.current.isValid = isValid;
+    control.current.isSubmitted = isSubmitted;
     control.current.errors = validationResult;
     control.current.validators = controlValidatorsState;
 
