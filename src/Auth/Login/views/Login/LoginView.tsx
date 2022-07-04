@@ -4,7 +4,7 @@ import { Link, Location, useLocation, useNavigate } from "react-router-dom";
 import { CopyRight, useAppDispatch } from "../../../../App";
 import logoPng from "../../../../assets/images/logo.png";
 import {
-    BasicValidators, Control, ControlGroup, Form, InputText, useControl, useControlGroup
+    BasicValidators, IControl, IControlGroup, Form, InputText, useControl, useControlGroup
 } from "../../../../Ui/Forms";
 import { Button } from "../../../../Ui/Layout";
 import { If } from "../../../../Ui/Structural";
@@ -27,7 +27,7 @@ const LoginView: FC = () => {
     //#endregion
 
     //#region Controls
-    const loginForm: ControlGroup = useControlGroup({
+    const loginForm: IControlGroup = useControlGroup({
         email: useControl("", [
             BasicValidators.required(),
             BasicValidators.email()
@@ -50,9 +50,9 @@ const LoginView: FC = () => {
 
         setIsLoading(true);
 
-        const email: string = (loginForm.controls.email as Control<string>).value;
-        const password: string = (loginForm.controls.password as Control<string>).value;
-        const company: string = (loginForm.controls.company as Control<string>).value;
+        const email: string = (loginForm.controls.email as IControl<string>).value;
+        const password: string = (loginForm.controls.password as IControl<string>).value;
+        const company: string = (loginForm.controls.company as IControl<string>).value;
 
         try {
             await appDispatch(authActions.login({email, password, company})).unwrap();
@@ -87,8 +87,8 @@ const LoginView: FC = () => {
                     </If>
 
                     <InputText label="E-mail" name="email" size="large" type="email"
-                               required
-                               control={loginForm.controls.email as Control<string>}
+                               required autoComplete="nope"
+                               control={loginForm.controls.email as IControl<string>}
                                errorMessages={{
                                    required: "E-mail é requerido.",
                                    email: "O E-mail informado não é válido."
@@ -96,14 +96,14 @@ const LoginView: FC = () => {
 
                     <InputText label="Password" name="password" size="large" type="password"
                                required
-                               control={loginForm.controls.password as Control<string>}
+                               control={loginForm.controls.password as IControl<string>}
                                errorMessages={{
                                    required: "Senha é requerido."
                                }} />
 
                     <InputText label="Empresa" name="company" size="large"
                                required
-                               control={loginForm.controls.company as Control<string>}
+                               control={loginForm.controls.company as IControl<string>}
                                errorMessages={{
                                    required: "Empresa é requerido."
                                }} />

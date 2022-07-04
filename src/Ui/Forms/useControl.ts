@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { AsyncValidatorFn } from "./AsyncValidatorFn.type";
 
-import { Control } from "./Control";
-import { ControlGroup } from "./ControlGroup";
+import { IControl } from "./IControl";
+import { IControlGroup } from "./IControlGroup";
 import { ValidatorFn } from "./ValidatorFn.type";
 import { ValidationResult } from "./ValidationResult.type";
 
@@ -30,7 +30,7 @@ enum ControlActions {
 export function useControl<T = any>(initialValue: T,
                                     validators: Array<ValidatorFn> = [],
                                     asyncValidators: Array<AsyncValidatorFn> = [],
-                                    options: ControlOptions = {}): Control<T> {
+                                    options: ControlOptions = {}): IControl<T> {
 
     //#region Initialization
     options.runAllSyncValidators = options.runAllSyncValidators ?? false;
@@ -40,7 +40,7 @@ export function useControl<T = any>(initialValue: T,
     const [controlState, controlDispatch] = useReducer(controlReducer.reducer, controlReducer.initialState);
     const [controlValidatorsState, setControlValidatorsState] = useState(validators);
     const [controlAsyncValidatorsState, setControlAsyncValidatorsState] = useState(asyncValidators);
-    const [parentState, setParentState] = useState<null | ControlGroup>(null);
+    const [parentState, setParentState] = useState<null|IControlGroup>(null);
     const [isSubmittedState, setIsSubmittedState] = useState(false);
     const [isAsyncValidatorsRunningState, setIsAsyncValidatorsRunningState] = useState(false);
     const [asyncValidationResultState, setAsyncValidationResultState] = useState<ValidationResult>(null);
@@ -176,7 +176,7 @@ export function useControl<T = any>(initialValue: T,
      * {@link Control.setParent}
      */
     const setParent = useCallback(
-        (parent: ControlGroup): void => {
+        (parent: IControlGroup): void => {
             setParentState(parent);
         }, []
     );
@@ -207,7 +207,14 @@ export function useControl<T = any>(initialValue: T,
      * Control never changes, only its contents. Re-Render is triggered normally because of setState.
      */
     const control = useRef(new Control(
-        initialValue,
+        controlState.value,
+        controlState.isTouched,
+        controlState.isDirty,
+        isValid,
+        isSubmittedState,
+        errors,
+        controlValidatorsState,
+        controlAsyncValidatorsState,
         change,
         blur,
         reset,
@@ -272,6 +279,7 @@ export function useControl<T = any>(initialValue: T,
     control.current.isSubmitted = isSubmittedState;
     control.current.errors = errors;
     control.current.validators = controlValidatorsState;
+    control.current.asyncValidators = controlAsyncValidatorsState;
 
     return control.current;
     //#endregion
@@ -424,4 +432,177 @@ type ControlReducerActions<T> = { type: ControlActions.INPUT, value: T }
 type Reducer<S, A, V> = {
     initialState: S;
     reducer(state: S, action: { type: A, value?: V }): S;
+}
+
+/**
+ * Concrete control used by the hook.
+ *
+ * @since 0.1.0
+ */
+class Control<T> implements IControl<T> {
+
+    //#region Private Attributes
+    #value: T;
+    #isTouched: boolean;
+    #isDirty: boolean;
+    #isValid: undefined|boolean;
+    #isSubmitted: boolean;
+    #errors: ValidationResult;
+    #validators: Array<ValidatorFn>;
+    #asyncValidators: Array<AsyncValidatorFn>;
+    //#endregion
+
+    //#region Attributes Getters/Setters
+    get value(): T {
+        return this.#value;
+    }
+    set value(value: T) {
+        this.#value = value;
+    }
+
+    get isTouched(): boolean {
+        return this.#isTouched;
+    }
+    set isTouched(value: boolean) {
+        this.#isTouched = value;
+    }
+
+    get isDirty(): boolean {
+        return this.#isDirty;
+    }
+    set isDirty(value: boolean) {
+        this.#isDirty = value;
+    }
+
+    get isValid(): boolean | undefined {
+        return this.#isValid;
+    }
+    set isValid(value: boolean | undefined) {
+        this.#isValid = value;
+    }
+
+    get isSubmitted(): boolean {
+        return this.#isSubmitted;
+    }
+    set isSubmitted(value: boolean) {
+        this.#isSubmitted = value;
+    }
+
+    get errors(): ValidationResult {
+        return this.#errors;
+    }
+    set errors(value: ValidationResult) {
+        this.#errors = value;
+    }
+
+    get validators(): Array<ValidatorFn> {
+        return this.#validators;
+    }
+    set validators(value: Array<ValidatorFn>) {
+        this.#validators = value;
+    }
+
+    get asyncValidators(): Array<AsyncValidatorFn> {
+        return this.#asyncValidators;
+    }
+    set asyncValidators(value: Array<AsyncValidatorFn>) {
+        this.#asyncValidators = value;
+    }
+    //#endregion
+
+    //#region Event Handlers
+    /**
+     * @inheritDoc
+     */
+    readonly addAsyncValidators: (...asyncValidators: Array<AsyncValidatorFn>) => void;
+    /**
+     * @inheritDoc
+     */
+    readonly addValidators: (...validators: Array<ValidatorFn>) => void;
+    /**
+     * @inheritDoc
+     */
+    readonly blur: () => void;
+    /**
+     * @inheritDoc
+     */
+    readonly change: (value: T) => void;
+    /**
+     * @inheritDoc
+     */
+    readonly markRetracted: () => void;
+    /**
+     * @inheritDoc
+     */
+    readonly markSubmitted: () => void;
+    /**
+     * @inheritDoc
+     */
+    readonly removeAsyncValidators: (...validators: Array<AsyncValidatorFn>) => void;
+    /**
+     * @inheritDoc
+     */
+    readonly removeValidators: (...validators: Array<ValidatorFn>)=> void;
+    /**
+     * @inheritDoc
+     */
+    readonly reset: () => void;
+    /**
+     * @inheritDoc
+     */
+    readonly setAsyncValidators: (asyncValidators: Array<AsyncValidatorFn>) => void;
+    /**
+     * @inheritDoc
+     */
+    readonly setParent: (parent: IControlGroup) => void;
+    /**
+     * @inheritDoc
+     */
+    readonly setValidators: (validators: Array<ValidatorFn>) => void;
+    //#endregion
+
+    //#region Constructor
+    constructor(value: T,
+                isTouched: boolean,
+                isDirty: boolean,
+                isValid: undefined|boolean,
+                isSubmitted: boolean,
+                errors: ValidationResult,
+                validators: Array<ValidatorFn>,
+                asyncValidators: Array<AsyncValidatorFn>,
+                change: (value: T) => void,
+                blur: () => void,
+                reset: () => void,
+                setValidators: (validators: Array<ValidatorFn>) => void,
+                addValidators: (...validators: Array<ValidatorFn>) => void,
+                removeValidators: (...validators: Array<ValidatorFn>) => void,
+                setAsyncValidators: (asyncValidators: Array<AsyncValidatorFn>) => void,
+                addAsyncValidators: (...asyncValidators: Array<AsyncValidatorFn>) => void,
+                removeAsyncValidators: (...asyncValidators: Array<AsyncValidatorFn>) => void,
+                setParent: (parent: IControlGroup) => void,
+                markSubmitted: () => void,
+                markRetracted: () => void) {
+        this.#value = value;
+        this.#isTouched = isTouched;
+        this.#isDirty = isDirty;
+        this.#isValid = isValid;
+        this.#isSubmitted = isSubmitted;
+        this.#errors = errors;
+        this.#validators = validators;
+        this.#asyncValidators = asyncValidators;
+
+        this.change = change;
+        this.blur = blur;
+        this.reset = reset;
+        this.setValidators = setValidators;
+        this.addValidators = addValidators;
+        this.removeValidators = removeValidators;
+        this.setAsyncValidators = setAsyncValidators;
+        this.addAsyncValidators = addAsyncValidators;
+        this.removeAsyncValidators = removeAsyncValidators;
+        this.setParent = setParent;
+        this.markSubmitted = markSubmitted;
+        this.markRetracted = markRetracted;
+    }
+    //#endregion
 }
