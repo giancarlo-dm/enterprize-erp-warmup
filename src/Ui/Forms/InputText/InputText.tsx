@@ -2,7 +2,7 @@ import React, { ChangeEvent, FC } from "react";
 
 import { classList } from "../../Helpers";
 import { If } from "../../Structural";
-import { Control } from "../Control";
+import { IControl } from "../IControl";
 import { Messages } from "../Messages/Messages";
 import { ValidationMessages } from "../ValidationMessages.type";
 import { ValidatorFn } from "../ValidatorFn.type";
@@ -10,7 +10,7 @@ import { ValidatorFn } from "../ValidatorFn.type";
 /**
  * InputText control. Allows the user to input text data with validation.
  *
- * @since v0.1.0
+ * @since 0.1.0
  */
 export const InputText: FC<Props> = (props) => {
 
@@ -30,7 +30,7 @@ export const InputText: FC<Props> = (props) => {
      */
     return (
         <div className={classList("control", {
-            invalid: !props.control.isValid && props.control.isTouched,
+            invalid: !props.control.isValid && (props.control.isTouched || props.control.isSubmitted),
             large: props.size === "large",
             small: props.size === "small"
         })}>
@@ -41,11 +41,11 @@ export const InputText: FC<Props> = (props) => {
                 {props.label}
             </label>
             <input id={props.name} type={props.type} name={props.name}
-                   required={props.required}
+                   required={props.required} autoComplete={props.autoComplete}
                    value={props.control.value}
                    onChange={changeHandler}
                    onBlur={blurHandler} />
-            <If expression={props.control.isTouched}>
+            <If expression={props.control.isTouched || props.control.isSubmitted}>
                 <Messages errors={props.control.errors}
                           errorMessages={props.errorMessages}
                           success={props.successMessage} />
@@ -57,10 +57,9 @@ export const InputText: FC<Props> = (props) => {
 
 InputText.defaultProps = {
     type: "text",
-    required: false
+    required: false,
+    autoComplete: "on"
 };
-
-//--------------------------------------------------------------------------------------------------
 
 type Props = {
     /**
@@ -74,7 +73,7 @@ type Props = {
     /**
      * Control to be used with this Input.
      */
-    control: Control<string>;
+    control: IControl<string>;
     /**
      * Type of the input. If email type is used, the {@link BasicValidators.email} validator will be
      * automatically added.
@@ -92,6 +91,12 @@ type Props = {
      * @default false
      */
     required?: boolean;
+    /**
+     * Flag to allow showing browser auto complete popup. To disable, despite MDN says to use "off"
+     * you must set to a random string, such as "nope".
+     * @default "on"
+     */
+    autoComplete?: string;
     /**
      * Set of validators to be used. Each validator must comply with the {@link ValidatorFn}
      * signature.

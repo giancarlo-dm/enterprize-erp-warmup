@@ -1,5 +1,5 @@
-import { Control } from "./Control";
-import { ControlGroup } from "./ControlGroup";
+import { IControl } from "./IControl";
+import { IControlGroup } from "./IControlGroup";
 
 /**
  * Map of named controls to be used in a {@link ControlGroup}.
@@ -7,5 +7,5 @@ import { ControlGroup } from "./ControlGroup";
  * @since 0.1.0
  */
 export type ControlsMap = {
-    [controlName: string]: ControlGroup|Control<any>;
+    [controlName: string]: IControlGroup|IControl<any>;
 }

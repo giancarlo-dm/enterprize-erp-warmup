@@ -3,7 +3,7 @@ import { ForOf } from "../../Structural";
 
 import { defaultMessages } from "../dafaulMessages.constant";
 import { ValidationMessages } from "../ValidationMessages.type";
-import { ValidatorResult } from "../ValidatorResult.type";
+import { ValidationResult } from "../ValidationResult.type";
 import classes from "./Messages.module.scss";
 
 /**
@@ -52,7 +52,7 @@ type Props = {
     /**
      * Map of validation errors.
      */
-    errors: ValidatorResult;
+    errors: ValidationResult;
     /**
      * Map of validation error messages by validation error key.
      */

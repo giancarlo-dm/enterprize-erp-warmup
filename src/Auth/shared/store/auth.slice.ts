@@ -1,7 +1,7 @@
 import { combineReducers, createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { RootState, store } from "../../../App/shared/store";
 
+import { RootState, store } from "../../../App";
 import { AuthAsyncThunks } from "./asyncThunks";
 import { AuthState } from "./AuthState";
 
@@ -34,6 +34,7 @@ const authSlice = createSlice({
     }
 });
 
+// TODO this probably does not work. We need to inject a new reducer, see example on Toolkit site.
 store.replaceReducer(combineReducers({auth: authSlice.reducer}) as any);
 
 export const authActions = {

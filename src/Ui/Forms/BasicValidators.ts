@@ -1,5 +1,5 @@
 import { ValidatorFn } from "./ValidatorFn.type";
-import { ValidatorResult } from "./ValidatorResult.type";
+import { ValidationResult } from "./ValidationResult.type";
 
 /**
  * Convenience static class with some common validators to be used in controls.
@@ -34,7 +34,7 @@ export class BasicValidators {
     //#endregion
 
     //#region Private Methods
-    static #requiredValidator(current: any): ValidatorResult {
+    static #requiredValidator(current: any): ValidationResult {
         if (current == null
             || (typeof current === "string" && current.trim().length === 0)
             || (current instanceof Array && current.length === 0)) {
@@ -44,7 +44,7 @@ export class BasicValidators {
         return null;
     }
 
-    static #emailValidator(current: string): ValidatorResult {
+    static #emailValidator(current: string): ValidationResult {
         if (current == null || current.trim().length === 0) {
             return null;
         }

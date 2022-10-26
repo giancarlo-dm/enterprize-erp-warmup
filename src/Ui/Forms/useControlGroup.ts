@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { ControlGroup } from "./ControlGroup";
+import { IControlGroup } from "./IControlGroup";
 import { ControlsMap } from "./ControlsMap.type";
 
 /**
@@ -18,34 +18,63 @@ import { ControlsMap } from "./ControlsMap.type";
 export function useControlGroup(controlsMap: ControlsMap) {
 
     //#region Initialization
-    const [isValid, setIsValid] = useState(false);
-    const [parentState, setParentState] = useState<null|ControlGroup>(null);
+    const [isValid, setIsValid] = useState<undefined|boolean>(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [parentState, setParentState] = useState<null|IControlGroup>(null);
     //#endregion
 
     //#region Event Handlers
     /**
      * {@link ControlGroup.updateValidity}
      */
-    const updateValidity = (): void => {
-        let valid: boolean = true;
+    const updateValidity = useCallback( (): void => {
+        let valid: undefined|boolean = true;
 
         for (let controlKey in controlsMap) {
             if (!controlsMap[controlKey].isValid) {
-                valid = false;
+                valid = controlsMap[controlKey].isValid;
                 break;
             }
         }
 
         setIsValid(valid);
-    };
+        },
+        [controlsMap]
+    );
 
     /**
      * {@link ControlGroup.updateValidity}
      */
     const setParent = useCallback(
-        (parent: ControlGroup): void => {
+        (parent: IControlGroup): void => {
             setParentState(parent);
         }, []
+    );
+
+    /**
+     * {@link ControlGroup.markSubmitted}
+     */
+    const markSubmitted = useCallback(
+        () => {
+            setIsSubmitted(true);
+            for (let controlKey in controlsMap) {
+                controlsMap[controlKey].markSubmitted();
+            }
+        },
+        [controlsMap]
+    );
+
+    /**
+     * {@link ControlGroup.markRetracted}
+     */
+    const markRetracted = useCallback(
+        () => {
+            setIsSubmitted(false);
+            for (let controlKey in controlsMap) {
+                controlsMap[controlKey].markRetracted();
+            }
+        },
+        [controlsMap]
     );
     //#endregion
 
@@ -56,8 +85,12 @@ export function useControlGroup(controlsMap: ControlsMap) {
      */
     const controlGroup = useRef(new ControlGroup(
         controlsMap,
+        isValid,
+        isSubmitted,
         updateValidity,
-        setParent
+        setParent,
+        markSubmitted,
+        markRetracted
     ));
     //#endregion
 
@@ -72,7 +105,7 @@ export function useControlGroup(controlsMap: ControlsMap) {
         [] // eslint-disable-line react-hooks/exhaustive-deps
     );
 
-    // Updates parent validity
+     // Updates parent validity
      useEffect(
         () => {
             if (parentState != null) {
@@ -85,7 +118,85 @@ export function useControlGroup(controlsMap: ControlsMap) {
 
     //#region Hook Return
     controlGroup.current.isValid = isValid;
+    controlGroup.current.isSubmitted = isSubmitted;
 
     return controlGroup.current;
+    //#endregion
+}
+
+//--------------------------------------------------------------------------------------------------
+// Helpers
+
+class ControlGroup implements IControlGroup {
+
+    //#region Private Attributes
+    #controls: ControlsMap;
+    #isValid: undefined|boolean;
+    #isSubmitted: boolean;
+    //#endregion
+
+    //#region Attributes Getters/Setters
+    /**
+     * @inheritDoc
+     */
+    get controls(): ControlsMap {
+        return this.#controls;
+    }
+    set controls(value: ControlsMap) {
+        this.#controls = value;
+    }
+
+    get isValid(): boolean | undefined {
+        return this.#isValid;
+    }
+    set isValid(value: boolean | undefined) {
+        this.#isValid = value;
+    }
+
+    get isSubmitted(): boolean {
+        return this.#isSubmitted;
+    }
+    set isSubmitted(value: boolean) {
+        this.#isSubmitted = value;
+    }
+    //#endregion
+
+    //#region Event Handlers
+    /**
+     * Updates the validity of the control group.
+     */
+    readonly updateValidity: () => void;
+    /**
+     * Sets a parent for this control. Will propagate any value change and validation status.
+     */
+    readonly setParent: (parent: IControlGroup) => void;
+    /**
+     * Marks this control group and all its children controls as submitted. To clear, please use
+     * {@link this.markRetracted}
+     */
+    readonly markSubmitted: () => void;
+    /**
+     * Marks this control group and all its children controls as not submitted.
+     */
+    readonly markRetracted: () => void;
+    //#endregion
+
+    //#region Constructor
+    constructor(controls: ControlsMap,
+                isValid: undefined|boolean,
+                isSubmitted: boolean,
+                updateValidity: () => void,
+                setParent: (parent: IControlGroup) => void,
+                markSubmitted: () => void,
+                markRetracted: () => void) {
+        this.#controls = controls;
+        this.#isValid = isValid;
+        this.#isSubmitted = isSubmitted;
+
+        this.updateValidity = updateValidity;
+        this.setParent = setParent;
+        this.markSubmitted = markSubmitted;
+        this.markRetracted = markRetracted;
+    }
     //#endregion
 }

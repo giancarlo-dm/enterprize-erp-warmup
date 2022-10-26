@@ -32,21 +32,12 @@ button {
         @include button-outline($color-primary-dark);
     }
 
-    &.block {
-        display: block;
-        width: 100%;
-    }
+    &:disabled {
+        background-color: $color-primary-light;
 
-    &.large {
-        font-size: $font-size-large;
-        height: increase-by-factor($button-height, $size-factor);
-        padding: 0 increase-by-factor($button-padding-x, $size-factor);
-    }
-
-    &.small {
-        font-size: $font-size-small;
-        height: decrease-by-factor($button-height, $size-factor);
-        padding: 0 decrease-by-factor($button-padding-x, $size-factor)
+        &:hover {
+            cursor: not-allowed;
+        }
     }
 
     &.secondary {
@@ -62,5 +53,30 @@ button {
             @include button-outline($color-secondary);
             @include default-box-shadow($color-secondary);
         }
+
+        &:disabled {
+            color: $color-primary-light;
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
+
+    &.block {
+        display: block;
+        width: 100%;
+    }
+
+    &.large {
+        font-size: $font-size-large;
+        height: increase-by-factor($button-height, $size-factor);
+        padding: 0 increase-by-factor($button-padding-x, $size-factor);
+    }
+
+    &.small {
+        font-size: $font-size-small;
+        height: decrease-by-factor($button-height, $size-factor);
+        padding: 0 decrease-by-factor($button-padding-x, $size-factor)
     }
 }
